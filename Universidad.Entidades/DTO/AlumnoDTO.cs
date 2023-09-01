@@ -6,4 +6,5 @@ public class AlumnoDTO : IPersona
 {
     public int Id { get; set; }
     public DatosPersonalesDTO Datos { get; set; }
+    public CarreraDTO Carrera { get; set; }
 }
