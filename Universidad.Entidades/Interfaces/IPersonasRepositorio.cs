@@ -2,7 +2,7 @@
 
 namespace Universidad.Entidades.Interfaces;
 
-public interface PersonasRepositorio
+public interface IPersonasRepositorio
 {
     public int Crear(ProfesorDTO profesor);
     public int Crear(AlumnoDTO alumno);

@@ -1,9 +1,10 @@
-﻿using Universidad.Entidades.DTO;
+﻿using MySql.Data.MySqlClient;
+using Universidad.Entidades.DTO;
 using Universidad.Entidades.Interfaces;
 
 namespace Universidad.DAL.DAO;
 
-public class AsignaturasDAO : CRUD<AsignaturaDTO>
+public class AsignaturasDAO : ICRUD<AsignaturaDTO>
 {
     public int Crear(AsignaturaDTO datos)
     {
@@ -29,6 +30,8 @@ public class AsignaturasDAO : CRUD<AsignaturaDTO>
                 }
                 return id;
             }
+            catch (MySqlException)
+            { throw; }
             catch (Exception)
             { throw; }
             finally
@@ -55,10 +58,15 @@ public class AsignaturasDAO : CRUD<AsignaturaDTO>
                 while (reader.Read())
                 {
                     datos.Id = reader.GetInt32(0);
-                    datos.Horas = reader.GetString(1);
+                    datos.Horas = reader.GetInt32(1);
+                    datos.Profesor = new ProfesorDTO() { Id = reader.GetInt32(2) };
+                    datos.Materia = new MateriaDTO() { Id = reader.GetInt32(3) };
+                    datos.Cargo = new CargoDTO() { Id = reader.GetInt32(4) };
                 }
                 return datos;
             }
+            catch (MySqlException)
+            { throw; }
             catch (Exception)
             { throw; }
             finally
@@ -70,7 +78,60 @@ public class AsignaturasDAO : CRUD<AsignaturaDTO>
 
     public void EliminarPorId(int id)
     {
-        throw new NotImplementedException();
+        using (var cnn = MySQLConexion.Con())
+        {
+            try
+            {
+                cnn.Open();
+                const string sql = "DELETE FROM asignaturas WHERE id_asignatura=@id LIMIT 1";
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = sql;
+                cmd.Parameters.AddWithValue("@id", id);
+                var reader = cmd.ExecuteReader();
+            }
+            catch (MySqlException)
+            { throw; }
+            catch (Exception)
+            { throw; }
+            finally
+            {
+                cnn.Close();
+            }
+        }
     }
 
+    public List<AsignaturaDTO> Listar()
+    {
+        using (var cnn = MySQLConexion.Con())
+        {
+            try
+            {
+                cnn.Open();
+                List<AsignaturaDTO> lista = new();
+                const string sql = "SELECT id_asignatura, horas, id_profesor, id_materia, id_cargo FROM asignaturas ";
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = sql;
+                var reader = cmd.ExecuteReader();
+                AsignaturaDTO datos = new AsignaturaDTO();
+                while (reader.Read())
+                {
+                    datos.Id = reader.GetInt32(0);
+                    datos.Horas = reader.GetInt32(1);
+                    datos.Profesor = new ProfesorDTO() { Id = reader.GetInt32(2) };
+                    datos.Materia = new MateriaDTO() { Id = reader.GetInt32(3) };
+                    datos.Cargo = new CargoDTO() { Id = reader.GetInt32(4) };
+                    lista.Add(datos);
+                }
+                return lista;
+            }
+            catch (MySqlException)
+            { throw; }
+            catch (Exception)
+            { throw; }
+            finally
+            {
+                cnn.Close();
+            }
+        }
+    }
 }

@@ -1,8 +1,9 @@
 ﻿namespace Universidad.Entidades.Interfaces;
 
-public interface CRUD<T>
+public interface ICRUD<T>
 {
     public int Crear(T datos);
+    public List<T> Listar();
 
     public T ObtenerPorId(int id);
 

@@ -1,9 +1,10 @@
-﻿using Universidad.Entidades.DTO;
+﻿using MySql.Data.MySqlClient;
+using Universidad.Entidades.DTO;
 using Universidad.Entidades.Interfaces;
 
 namespace Universidad.DAL.DAO;
 
-public class PersonasDAO : PersonasRepositorio
+public class PersonasDAO : IPersonasRepositorio
 {
     private readonly DatosPersonalesDAO _datosDAO = new DatosPersonalesDAO();
 
@@ -29,6 +30,8 @@ public class PersonasDAO : PersonasRepositorio
                 }
                 return id;
             }
+            catch (MySqlException)
+            { throw; }
             catch (Exception)
             { throw; }
             finally
@@ -60,6 +63,8 @@ public class PersonasDAO : PersonasRepositorio
                 }
                 return id;
             }
+            catch (MySqlException)
+            { throw; }
             catch (Exception)
             { throw; }
             finally
@@ -96,6 +101,8 @@ public class PersonasDAO : PersonasRepositorio
                 }
                 return profesor;
             }
+            catch (MySqlException)
+            { throw; }
             catch (Exception)
             { throw; }
             finally
@@ -132,6 +139,8 @@ public class PersonasDAO : PersonasRepositorio
                 }
                 return alumno;
             }
+            catch (MySqlException)
+            { throw; }
             catch (Exception)
             { throw; }
             finally
@@ -156,6 +165,8 @@ public class PersonasDAO : PersonasRepositorio
                 cmd.Parameters.AddWithValue("@id", profesor.Id);
                 var reader = cmd.ExecuteReader();
             }
+            catch (MySqlException)
+            { throw; }
             catch (Exception)
             { throw; }
             finally
@@ -180,6 +191,8 @@ public class PersonasDAO : PersonasRepositorio
                 cmd.Parameters.AddWithValue("@id", alumno.Id);
                 var reader = cmd.ExecuteReader();
             }
+            catch (MySqlException)
+            { throw; }
             catch (Exception)
             { throw; }
             finally
