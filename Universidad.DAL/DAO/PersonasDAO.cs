@@ -1,8 +1,9 @@
 ﻿using Universidad.Entidades.DTO;
+using Universidad.Entidades.Interfaces;
 
 namespace Universidad.DAL.DAO;
 
-public class PersonasDAO
+public class PersonasDAO : PersonasRepositorio
 {
     private readonly DatosPersonalesDAO _datosDAO = new DatosPersonalesDAO();
 

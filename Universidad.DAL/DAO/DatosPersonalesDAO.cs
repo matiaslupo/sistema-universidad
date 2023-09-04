@@ -1,8 +1,9 @@
 ﻿using Universidad.Entidades.DTO;
+using Universidad.Entidades.Interfaces;
 
 namespace Universidad.DAL.DAO;
 
-public class DatosPersonalesDAO
+internal class DatosPersonalesDAO : CRUD<DatosPersonalesDTO> 
 {
     public int Crear(DatosPersonalesDTO datos)
     {
