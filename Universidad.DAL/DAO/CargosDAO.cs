@@ -14,9 +14,7 @@ internal class CargosDAO : ICRUD<CargoDTO>
             {
                 int id = 0;
                 cnn.Open();
-                const string sql = "INSERT INTO cargos (descripcion)" +
-                    "VALUES (@descripcion)" +
-                    "SELECT LAST_INSERT_ID()";
+                const string sql = ConsultaInsertarCargo;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@descripcion", datos.Descripcion);
@@ -27,10 +25,8 @@ internal class CargosDAO : ICRUD<CargoDTO>
                 }
                 return id;
             }
-            catch (MySqlException)
-            { throw; }
-            catch (Exception)
-            { throw; }
+            catch (MySqlException) { throw; }
+            catch (Exception) { throw; }
             finally
             {
                 cnn.Close();
@@ -45,8 +41,7 @@ internal class CargosDAO : ICRUD<CargoDTO>
             try
             {
                 cnn.Open();
-                const string sql = "SELECT id_cargo, descripcion " +
-                    "FROM cargos WHERE id_cargo=@id LIMIT 1";
+                const string sql = ConsultaBuscarPorId;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@id", id);
@@ -59,10 +54,8 @@ internal class CargosDAO : ICRUD<CargoDTO>
                 }
                 return datos;
             }
-            catch (MySqlException)
-            { throw; }
-            catch (Exception)
-            { throw; }
+            catch (MySqlException) { throw; }
+            catch (Exception) { throw; }
             finally
             {
                 cnn.Close();
@@ -77,16 +70,14 @@ internal class CargosDAO : ICRUD<CargoDTO>
             try
             {
                 cnn.Open();
-                const string sql = "DELETE FROM cargos WHERE id_cargo=@id LIMIT 1";
+                const string sql = ConsultaEliminarCargo;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@id", id);
                 var reader = cmd.ExecuteReader();
             }
-            catch (MySqlException)
-            { throw; }
-            catch (Exception)
-            { throw; }
+            catch (MySqlException) { throw; }
+            catch (Exception) { throw; }
             finally
             {
                 cnn.Close();
@@ -102,7 +93,7 @@ internal class CargosDAO : ICRUD<CargoDTO>
             {
                 cnn.Open();
                 List<CargoDTO> lista = new();
-                const string sql = "SELECT id_cargo, descripcion FROM cargos ";
+                const string sql = ConsultaListarCargos;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 var reader = cmd.ExecuteReader();
@@ -115,14 +106,23 @@ internal class CargosDAO : ICRUD<CargoDTO>
                 }
                 return lista;
             }
-            catch (MySqlException)
-            { throw; }
-            catch (Exception)
-            { throw; }
+            catch (MySqlException) { throw; }
+            catch (Exception) { throw; }
             finally
             {
                 cnn.Close();
             }
         }
     }
+
+    private const string ConsultaInsertarCargo = "INSERT INTO cargos (descripcion)" +
+                    "VALUES (@descripcion)" +
+                    "SELECT LAST_INSERT_ID()";
+
+    private const string ConsultaBuscarPorId = "SELECT id_cargo, descripcion " +
+                    "FROM cargos WHERE id_cargo=@id LIMIT 1";
+
+    private const string ConsultaEliminarCargo = "DELETE FROM cargos WHERE id_cargo=@id LIMIT 1";
+
+    private const string ConsultaListarCargos = "SELECT id_cargo, descripcion FROM cargos";
 }

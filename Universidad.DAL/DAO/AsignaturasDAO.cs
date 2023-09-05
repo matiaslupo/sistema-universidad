@@ -14,9 +14,7 @@ public class AsignaturasDAO : ICRUD<AsignaturaDTO>
             {
                 int id = 0;
                 cnn.Open();
-                const string sql = "INSERT INTO asignaturas (horas, id_profesor, id_cargo, id_materia)" +
-                    "VALUES (@horas, @id_profesor, @id_cargo, @id_materia)" +
-                    "SELECT LAST_INSERT_ID()";
+                const string sql = ConsultaInsertarAsignatura;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@horas", datos.Horas);
@@ -48,8 +46,7 @@ public class AsignaturasDAO : ICRUD<AsignaturaDTO>
             try
             {
                 cnn.Open();
-                const string sql = "SELECT id_asignatura, horas, id_profesor, id_materia, id_cargo " +
-                    "FROM asignaturas WHERE id_asignatura=@id LIMIT 1";
+                const string sql = ;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@id", id);
@@ -83,7 +80,7 @@ public class AsignaturasDAO : ICRUD<AsignaturaDTO>
             try
             {
                 cnn.Open();
-                const string sql = "DELETE FROM asignaturas WHERE id_asignatura=@id LIMIT 1";
+                const string sql = ConsultaEliminarAsignatura;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@id", id);
@@ -108,7 +105,7 @@ public class AsignaturasDAO : ICRUD<AsignaturaDTO>
             {
                 cnn.Open();
                 List<AsignaturaDTO> lista = new();
-                const string sql = "SELECT id_asignatura, horas, id_profesor, id_materia, id_cargo FROM asignaturas ";
+                const string sql = ConsultaListarAsignaturas;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 var reader = cmd.ExecuteReader();
@@ -134,4 +131,15 @@ public class AsignaturasDAO : ICRUD<AsignaturaDTO>
             }
         }
     }
+
+    private const string ConsultaInsertarAsignatura = "INSERT INTO asignaturas (horas, id_profesor, id_cargo, id_materia)" +
+                    "VALUES (@horas, @id_profesor, @id_cargo, @id_materia)" +
+                    "SELECT LAST_INSERT_ID()";
+
+    private const string ConsultaBuscarPorId = "SELECT id_asignatura, horas, id_profesor, id_materia, id_cargo " +
+                    "FROM asignaturas WHERE id_asignatura=@id LIMIT 1";
+
+    private const string ConsultaEliminarAsignatura = "DELETE FROM asignaturas WHERE id_asignatura=@id LIMIT 1";
+
+    private const string ConsultaListarAsignaturas = "SELECT id_asignatura, horas, id_profesor, id_materia, id_cargo FROM asignaturas ";
 }

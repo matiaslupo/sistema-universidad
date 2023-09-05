@@ -6,7 +6,6 @@ namespace Universidad.DAL.DAO;
 
 public class PersonasDAO : IPersonasRepositorio
 {
-    private readonly DatosPersonalesDAO _datosDAO = new DatosPersonalesDAO();
 
     public int Crear(ProfesorDTO profesor)
     {
@@ -14,15 +13,14 @@ public class PersonasDAO : IPersonasRepositorio
         {
             try
             {
-                int id = _datosDAO.Crear(profesor.Datos);
-                profesor.Datos.IdDatos = id;
+                int id = InsertarDatos(profesor);
+                profesor.IdDatos = id;
                 cnn.Open();
-                const string sql = "INSERT INTO profesores (id_datos)" +
-                    "VALUES (@id)" +
-                    "SELECT LAST_INSERT_ID()";
+                const string sql = ConsultaInsertarProfesor;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
-                cmd.Parameters.AddWithValue("@id", profesor.Datos.IdDatos);
+                cmd.Parameters.AddWithValue("@id", profesor.IdDatos);
+                cmd.Parameters.AddWithValue("@sueldoporhora", profesor.SueldoPorHora);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -47,15 +45,14 @@ public class PersonasDAO : IPersonasRepositorio
         {
             try
             {
-                int id = _datosDAO.Crear(alumno.Datos);
-                alumno.Datos.IdDatos = id;
+                int id = InsertarDatos(alumno);
+                alumno.IdDatos = id;
                 cnn.Open();
-                const string sql = "INSERT INTO alumnos (id_datos)" +
-                    "VALUES (@id)" +
-                    "SELECT LAST_INSERT_ID()";
+                const string sql = ConsultaInsertarAlumno;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
-                cmd.Parameters.AddWithValue("@id", alumno.Datos.IdDatos);
+                cmd.Parameters.AddWithValue("@id", alumno.IdDatos);
+                cmd.Parameters.AddWithValue("@carrera", alumno.Carrera.Id);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -74,6 +71,8 @@ public class PersonasDAO : IPersonasRepositorio
         }
     }
 
+    
+
     public ProfesorDTO BuscarProfesorPorDNI(string dni)
     {
         using (var cnn = MySQLConexion.Con())
@@ -81,23 +80,21 @@ public class PersonasDAO : IPersonasRepositorio
             try
             {
                 cnn.Open();
-                const string sql = "SELECT p.id_profesor, d.id_datos, d.dni, d.nombre, d.apellido, d.email FROM profesores AS p" +
-                    "JOIN datos_personales AS d ON p.id_datos=d.id_datos " +
-                    "WHERE d.dni=@dni";
+                const string sql = ConsultaBuscarProfesor;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@dni", dni);
                 var reader = cmd.ExecuteReader();
                 ProfesorDTO profesor = new ProfesorDTO();
-                profesor.Datos = new DatosPersonalesDTO();
                 while (reader.Read())
                 {
                     profesor.Id = reader.GetInt32(0);
-                    profesor.Datos.IdDatos = reader.GetInt32(1);
-                    profesor.Datos.DNI = reader.GetString(2);
-                    profesor.Datos.Nombre= reader.GetString(3);
-                    profesor.Datos.Apellido= reader.GetString(4);
-                    profesor.Datos.Email = reader.GetString(5);
+                    profesor.IdDatos = reader.GetInt32(1);
+                    profesor.DNI = reader.GetString(2);
+                    profesor.Nombre= reader.GetString(3);
+                    profesor.Apellido= reader.GetString(4);
+                    profesor.Email = reader.GetString(5);
+                    profesor.SueldoPorHora = reader.GetDecimal(6);
                 }
                 return profesor;
             }
@@ -119,23 +116,23 @@ public class PersonasDAO : IPersonasRepositorio
             try
             {
                 cnn.Open();
-                const string sql = "SELECT a.id_alumno, d.id_datos, d.dni, d.nombre, d.apellido, d.email FROM alumnos AS a" +
-                    "JOIN datos_personales AS d ON a.id_datos=d.id_datos " +
-                    "WHERE d.dni=@dni";
+                const string sql = ConsultaBuscarAlumno;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@dni", dni);
                 var reader = cmd.ExecuteReader();
                 AlumnoDTO alumno = new AlumnoDTO();
-                alumno.Datos = new DatosPersonalesDTO();
+                alumno.Carrera = new();
                 while (reader.Read())
                 {
                     alumno.Id = reader.GetInt32(0);
-                    alumno.Datos.IdDatos = reader.GetInt32(1);
-                    alumno.Datos.DNI = reader.GetString(2);
-                    alumno.Datos.Nombre = reader.GetString(3);
-                    alumno.Datos.Apellido = reader.GetString(4);
-                    alumno.Datos.Email = reader.GetString(5);
+                    alumno.IdDatos = reader.GetInt32(1);
+                    alumno.DNI = reader.GetString(2);
+                    alumno.Nombre = reader.GetString(3);
+                    alumno.Apellido = reader.GetString(4);
+                    alumno.Email = reader.GetString(5);
+                    alumno.Carrera.Id = reader.GetInt32(6);
+                    alumno.Carrera.Nombre = reader.GetString(7);
                 }
                 return alumno;
             }
@@ -157,9 +154,9 @@ public class PersonasDAO : IPersonasRepositorio
             try
             {
                 ProfesorDTO profesor = BuscarProfesorPorDNI(dni);
-                _datosDAO.EliminarPorId(profesor.Datos.IdDatos);
+                EliminarDatos(profesor.IdDatos);
                 cnn.Open();
-                const string sql = "DELETE FROM profesores WHERE id_profesor=@id LIMIT 1";
+                const string sql = ConsultaEliminarProfesor;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@id", profesor.Id);
@@ -183,9 +180,9 @@ public class PersonasDAO : IPersonasRepositorio
             try
             {
                 AlumnoDTO alumno = BuscarAlumnoPorDNI(dni);
-                _datosDAO.EliminarPorId(alumno.Datos.IdDatos);
+                EliminarDatos(alumno.IdDatos);
                 cnn.Open();
-                const string sql = "DELETE FROM alumnos WHERE id_alumno=@id LIMIT 1";
+                const string sql = ConsultaEliminarAlumno;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@id", alumno.Id);
@@ -201,4 +198,93 @@ public class PersonasDAO : IPersonasRepositorio
             }
         }
     }
+
+    private int InsertarDatos(IPersona datos)
+    {
+        using (var cnn = MySQLConexion.Con())
+        {
+            try
+            {
+                int id = 0;
+                cnn.Open();
+                const string sql = ConsultaInsertarDatos;
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = sql;
+                cmd.Parameters.AddWithValue("@dni", datos.DNI);
+                cmd.Parameters.AddWithValue("@nombre", datos.Nombre);
+                cmd.Parameters.AddWithValue("@apellido", datos.Apellido);
+                cmd.Parameters.AddWithValue("@email", datos.Email);
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    id = reader.GetInt32(0);
+                }
+                return id;
+            }
+            catch (MySqlException)
+            { throw; }
+            catch (Exception)
+            { throw; }
+            finally
+            {
+                cnn.Close();
+            }
+        }
+    }
+
+    private void EliminarDatos(int id)
+    {
+
+        using (var cnn = MySQLConexion.Con())
+        {
+            try
+            {
+                cnn.Open();
+                const string sql = ConsultaEliminarDatos;
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = sql;
+                cmd.Parameters.AddWithValue("@id", id);
+                var reader = cmd.ExecuteReader();
+            }
+            catch (MySqlException)
+            { throw; }
+            catch (Exception)
+            { throw; }
+            finally
+            {
+                cnn.Close();
+            }
+        }
+    }
+
+    //Consultas SQL
+
+    private const string ConsultaInsertarProfesor = "INSERT INTO profesores (id_datos, sueldoporhora)" +
+                    "VALUES (@id, @sueldoporhora)" +
+                    "SELECT LAST_INSERT_ID()";
+
+    private const string ConsultaInsertarAlumno = "INSERT INTO alumnos (id_datos, id_carrera)" +
+                    "VALUES (@id, @carrera)" +
+                    "SELECT LAST_INSERT_ID()";
+
+    private const string ConsultaBuscarProfesor = "SELECT p.id_profesor, d.id_datos, d.dni, d.nombre, d.apellido, d.email, p.sueldoporhora FROM profesores AS p" +
+                    "JOIN datos_personales AS d ON p.id_datos=d.id_datos " +
+                    "WHERE d.dni=@dni";
+
+    private const string ConsultaBuscarAlumno = "SELECT a.id_alumno, d.id_datos, d.dni, d.nombre, d.apellido, d.email, c.id_carrera, c.nombre FROM alumnos AS a" +
+                    "JOIN datos_personales AS d ON a.id_datos=d.id_datos " +
+                    "JOIN carreras AS c ON a.id_carrera= c.id_carrera" +
+                    "WHERE d.dni=@dni";
+
+    private const string ConsultaEliminarProfesor = "DELETE FROM profesores WHERE id_profesor=@id LIMIT 1";
+
+    private const string ConsultaEliminarAlumno = "DELETE FROM alumnos WHERE id_alumno=@id LIMIT 1";
+
+    private const string ConsultaInsertarDatos = "INSERT INTO datos_personales (dni, nombre, apellido, email)" +
+                    "VALUES (@dni, @nombre, @apellido, @email)" +
+                    "SELECT LAST_INSERT_ID()";
+
+    private const string ConsultaEliminarDatos = "DELETE FROM datos_personales WHERE id_datos=@id LIMIT 1";
+
+
 }
