@@ -1,6 +1,6 @@
 ﻿namespace Universidad.Entidades.Interfaces;
 
-public interface ICRUD<T>
+public interface IRepositorio<T>
 {
     public int Crear(T datos);
     public List<T> Listar();

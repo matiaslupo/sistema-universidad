@@ -4,7 +4,7 @@ using Universidad.Entidades.Interfaces;
 
 namespace Universidad.DAL.DAO;
 
-public class AsignaturasDAO : ICRUD<AsignaturaDTO>
+public class AsignaturasDAO : IRepositorio<AsignaturaDTO>
 {
     public int Crear(AsignaturaDTO datos)
     {
