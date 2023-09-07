@@ -1,8 +1,10 @@
-﻿namespace Universidad.Entidades.DTO;
+﻿using Universidad.Entidades.Interfaces;
 
-public class MateriaDTO
+namespace Universidad.Entidades.DTO;
+
+public class MateriaDTO : IDTO
 {
     public int Id { get; set; }
     public string Nombre { get; set; } = string.Empty;
-    public CarreraDTO Carrera { get; set; }
+    public CarreraDTO? Carrera { get; set; }
 }

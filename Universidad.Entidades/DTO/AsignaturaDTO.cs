@@ -1,10 +1,12 @@
-﻿namespace Universidad.Entidades.DTO;
+﻿using Universidad.Entidades.Interfaces;
 
-public class AsignaturaDTO
+namespace Universidad.Entidades.DTO;
+
+public class AsignaturaDTO : IDTO
 {
     public int Id { get; set; }
     public int Horas { get; set; }
-    public ProfesorDTO Profesor { get; set; }
-    public CargoDTO Cargo { get; set; }
-    public MateriaDTO Materia { get; set; }
+    public ProfesorDTO? Profesor { get; set; }
+    public CargoDTO? Cargo { get; set; }
+    public MateriaDTO? Materia { get; set; }
 }

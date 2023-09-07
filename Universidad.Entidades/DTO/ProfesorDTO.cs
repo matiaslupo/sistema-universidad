@@ -2,7 +2,7 @@
 
 namespace Universidad.Entidades.DTO;
 
-public class ProfesorDTO : IPersona
+public class ProfesorDTO : IPersona, IDTO
 {
     public int Id { get; set; }
     public int IdDatos { get; set; }

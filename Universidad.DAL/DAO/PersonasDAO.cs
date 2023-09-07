@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using Universidad.Entidades.DTO;
+using Universidad.Entidades.Helpers;
 using Universidad.Entidades.Interfaces;
 
 namespace Universidad.DAL.DAO;
@@ -20,7 +21,6 @@ public class PersonasDAO : IPersonasRepositorio
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@id", profesor.IdDatos);
-                cmd.Parameters.AddWithValue("@sueldoporhora", profesor.SueldoPorHora);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -52,7 +52,7 @@ public class PersonasDAO : IPersonasRepositorio
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@id", alumno.IdDatos);
-                cmd.Parameters.AddWithValue("@carrera", alumno.Carrera.Id);
+                cmd.Parameters.AddWithValue("@carrera", alumno.Carrera?.Id);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -73,7 +73,7 @@ public class PersonasDAO : IPersonasRepositorio
 
     
 
-    public ProfesorDTO BuscarProfesorPorDNI(string dni)
+    public ProfesorDTO? BuscarProfesorPorDNI(string dni)
     {
         using (var cnn = MySQLConexion.Con())
         {
@@ -85,16 +85,16 @@ public class PersonasDAO : IPersonasRepositorio
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@dni", dni);
                 var reader = cmd.ExecuteReader();
-                ProfesorDTO profesor = new ProfesorDTO();
+                ProfesorDTO? profesor = null;
                 while (reader.Read())
                 {
+                    profesor = new ProfesorDTO();
                     profesor.Id = reader.GetInt32(0);
                     profesor.IdDatos = reader.GetInt32(1);
                     profesor.DNI = reader.GetString(2);
                     profesor.Nombre= reader.GetString(3);
                     profesor.Apellido= reader.GetString(4);
                     profesor.Email = reader.GetString(5);
-                    profesor.SueldoPorHora = reader.GetDecimal(6);
                 }
                 return profesor;
             }
@@ -109,7 +109,7 @@ public class PersonasDAO : IPersonasRepositorio
         }
     }
 
-    public AlumnoDTO BuscarAlumnoPorDNI(string dni)
+    public AlumnoDTO? BuscarAlumnoPorDNI(string dni)
     {
         using (var cnn = MySQLConexion.Con())
         {
@@ -121,10 +121,12 @@ public class PersonasDAO : IPersonasRepositorio
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@dni", dni);
                 var reader = cmd.ExecuteReader();
-                AlumnoDTO alumno = new AlumnoDTO();
-                alumno.Carrera = new();
+                AlumnoDTO? alumno = null;
                 while (reader.Read())
                 {
+                    alumno = new AlumnoDTO();
+                    alumno.Carrera = new();
+
                     alumno.Id = reader.GetInt32(0);
                     alumno.IdDatos = reader.GetInt32(1);
                     alumno.DNI = reader.GetString(2);
@@ -153,7 +155,9 @@ public class PersonasDAO : IPersonasRepositorio
         {
             try
             {
-                ProfesorDTO profesor = BuscarProfesorPorDNI(dni);
+                ProfesorDTO? profesor = BuscarProfesorPorDNI(dni);
+                if (profesor == null)
+                    throw new Exception(MensajesEstandar.NoEncontrado(EntidadesString.Profesor));
                 EliminarDatos(profesor.IdDatos);
                 cnn.Open();
                 const string sql = ConsultaEliminarProfesor;
@@ -179,7 +183,9 @@ public class PersonasDAO : IPersonasRepositorio
         {
             try
             {
-                AlumnoDTO alumno = BuscarAlumnoPorDNI(dni);
+                AlumnoDTO? alumno = BuscarAlumnoPorDNI(dni);
+                if (alumno == null)
+                    throw new Exception(MensajesEstandar.NoEncontrado(EntidadesString.Alumno));
                 EliminarDatos(alumno.IdDatos);
                 cnn.Open();
                 const string sql = ConsultaEliminarAlumno;

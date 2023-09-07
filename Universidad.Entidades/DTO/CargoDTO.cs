@@ -1,6 +1,8 @@
-﻿namespace Universidad.Entidades.DTO;
+﻿using Universidad.Entidades.Interfaces;
 
-public class CargoDTO
+namespace Universidad.Entidades.DTO;
+
+public class CargoDTO : IDTO
 {
     public int Id { get; set; }
     public string Descripcion { get; set; } = string.Empty;    

@@ -17,8 +17,8 @@ internal class InscripcionesDAO : IRepositorio<InscripcionDTO>
                 const string sql = ConsultaInsertarInscripcion;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
-                cmd.Parameters.AddWithValue("@id_alumno", datos.Alumno.Id);
-                cmd.Parameters.AddWithValue("@id_materia", datos.Materia.Id);
+                cmd.Parameters.AddWithValue("@id_alumno", datos.Alumno?.Id);
+                cmd.Parameters.AddWithValue("@id_materia", datos.Materia?.Id);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {

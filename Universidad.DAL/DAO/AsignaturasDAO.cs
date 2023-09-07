@@ -46,7 +46,7 @@ public class AsignaturasDAO : IRepositorio<AsignaturaDTO>
             try
             {
                 cnn.Open();
-                const string sql = ;
+                const string sql = ConsultaBuscarPorId;
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@id", id);

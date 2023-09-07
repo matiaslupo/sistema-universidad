@@ -1,8 +1,10 @@
-﻿namespace Universidad.Entidades.DTO;
+﻿using Universidad.Entidades.Interfaces;
 
-public class InscripcionDTO
+namespace Universidad.Entidades.DTO;
+
+public class InscripcionDTO : IDTO
 {
     public int Id { get; set; }
-    public MateriaDTO Materia { get; set; }
-    public AlumnoDTO Alumno { get; set; }
+    public MateriaDTO? Materia { get; set; }
+    public AlumnoDTO? Alumno { get; set; }
 }
