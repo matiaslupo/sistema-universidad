@@ -4,7 +4,7 @@ using Universidad.Entidades.Interfaces;
 
 namespace Universidad.DAL.DAO;
 
-internal class InscripcionesDAO : IRepositorio<InscripcionDTO>
+public class InscripcionesDAO : IRepositorio<InscripcionDTO>
 {
     public int Crear(InscripcionDTO datos)
     {

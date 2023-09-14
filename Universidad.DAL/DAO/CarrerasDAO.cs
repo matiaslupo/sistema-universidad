@@ -4,7 +4,7 @@ using Universidad.Entidades.Interfaces;
 
 namespace Universidad.DAL.DAO;
 
-internal class CarrerasDAO : IRepositorio<CarreraDTO>
+public class CarrerasDAO : IRepositorio<CarreraDTO>
 {
     public int Crear(CarreraDTO datos)
     {

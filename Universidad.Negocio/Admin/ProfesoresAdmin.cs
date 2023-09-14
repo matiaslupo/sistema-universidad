@@ -7,11 +7,11 @@ using Universidad.Negocio.Contratos;
 
 namespace Universidad.Negocio.Admin;
 
-public class ProfesoresAdmin : IProfesoresAdministrador
+public class ProfesoresAdmin : IPersonaAdministrador<ProfesorDTO>
 {
     private readonly PersonasDAO _datos = new();
 
-    public Resultado<ProfesorDTO> AgregarProfesor(ProfesorDTO profesor)
+    public Resultado<ProfesorDTO> Agregar(ProfesorDTO profesor)
     {
         var resultado = new Resultado<ProfesorDTO>();
         try
@@ -30,7 +30,7 @@ public class ProfesoresAdmin : IProfesoresAdministrador
         return resultado;
     }
 
-    public Resultado<ProfesorDTO> BuscarProfesorPorDNI(string dni)
+    public Resultado<ProfesorDTO> BuscarPorDNI(string dni)
     {
         var resultado = new Resultado<ProfesorDTO>();
         try
@@ -55,7 +55,7 @@ public class ProfesoresAdmin : IProfesoresAdministrador
         return resultado;
     }
 
-    public Resultado<IDTO> EliminarProfesorPorDNI(string dni)
+    public Resultado<IDTO> EliminarPorDNI(string dni)
     {
         var resultado = new Resultado<IDTO>();
         try

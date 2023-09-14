@@ -4,7 +4,7 @@ namespace Universidad.DAL;
 
 public static class MySQLConexion
 {
-    private static string _connectionString= "server=localhost;database=universidad;user=root;password=;"; 
+    private static string _connectionString= "server=localhost;port=3306;database=universidad;user=root;password=;"; 
 
     public static MySqlConnection Con()
     {
