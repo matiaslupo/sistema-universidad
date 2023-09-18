@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Universidad.API.Models.Request;
 using Universidad.Entidades.DTO;
-using Universidad.Negocio.Admin;
+using Universidad.Entidades.Helpers;
+using Universidad.Entidades.Interfaces;
+using Universidad.Entidades.Respuestas;
 using Universidad.Negocio.Contratos;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,39 +14,37 @@ namespace Universidad.API.Controllers
     [ApiController]
     public class MateriasController : ControllerBase
     {
-        private IMateriasAdministrador _materias = new MateriasAdmin();
+        private IMateriasAdministrador _materias;
+
+        public MateriasController(IMateriasAdministrador admin)
+        { 
+            _materias = admin;
+        }
 
         // GET: api/<MateriasController>
         [HttpGet]
-        public async Task<IEnumerable<MateriaDTO>> Get()
+        public ActionResult<IEnumerable<MateriaDTO>> Listar()
         {
-            List<MateriaDTO> datos= _materias.Listar();
-            return datos;
-        }
-
-        // GET api/<MateriasController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
+            var datos= _materias.Listar();
+            return Ok(datos);
         }
 
         // POST api/<MateriasController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public ActionResult<Resultado<MateriaDTO>> Crear([FromBody] NuevaMateria materia)
         {
+            MateriaDTO dto = new()
+            {
+                Nombre = materia.Nombre,
+                Carrera = new CarreraDTO { Id = materia.IdCarrera }
+            };
+            var resultado = _materias.Crear(dto);
+            if (resultado.Operacion == ResultadoOperacionEnum.Error)
+                return BadRequest(resultado);
+
+            return Ok(resultado);
         }
 
-        // PUT api/<MateriasController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<MateriasController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+       
     }
 }
